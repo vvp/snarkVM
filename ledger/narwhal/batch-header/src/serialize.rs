@@ -40,10 +40,10 @@ impl<'de, N: Network> Deserialize<'de> for BatchHeader<N> {
         match deserializer.is_human_readable() {
             true => {
                 let mut header = serde_json::Value::deserialize(deserializer)?;
-                let batch_id: Field<N> = DeserializeExt::take_from_value::<D>(&mut header, "batch_id")?;
 
                 // Recover the header.
-                let batch_header = Self::from(
+                Self::from(
+                    DeserializeExt::take_from_value::<D>(&mut header, "batch_id")?,
                     DeserializeExt::take_from_value::<D>(&mut header, "author")?,
                     DeserializeExt::take_from_value::<D>(&mut header, "round")?,
                     DeserializeExt::take_from_value::<D>(&mut header, "timestamp")?,
@@ -51,16 +51,7 @@ impl<'de, N: Network> Deserialize<'de> for BatchHeader<N> {
                     DeserializeExt::take_from_value::<D>(&mut header, "previous_certificate_ids")?,
                     DeserializeExt::take_from_value::<D>(&mut header, "signature")?,
                 )
-                .map_err(de::Error::custom)?;
-
-                // Ensure that the batch ID matches the recovered header.
-                match batch_id == batch_header.batch_id() {
-                    true => Ok(batch_header),
-                    false => {
-                        Err(error(format!("Batch ID mismatch: expected {batch_id}, got {}", batch_header.batch_id())))
-                            .map_err(de::Error::custom)
-                    }
-                }
+                .map_err(de::Error::custom)
             }
             false => FromBytesDeserializer::<Self>::deserialize_with_size_encoding(deserializer, "batch header"),
         }

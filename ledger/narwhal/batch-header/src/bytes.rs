@@ -36,7 +36,7 @@ impl<N: Network> FromBytes for BatchHeader<N> {
         // Read the number of transmission IDs.
         let num_transmissions = u32::read_le(&mut reader)?;
         // Read the transmission IDs.
-        let mut transmission_ids = IndexSet::new();
+        let mut transmission_ids = IndexSet::with_capacity(num_transmissions as usize);
         for _ in 0..num_transmissions {
             // Insert the transmission ID.
             transmission_ids.insert(TransmissionID::read_le(&mut reader)?);
@@ -55,14 +55,8 @@ impl<N: Network> FromBytes for BatchHeader<N> {
         let signature = Signature::read_le(&mut reader)?;
 
         // Construct the batch.
-        let batch = Self::from(author, round, timestamp, transmission_ids, previous_certificate_ids, signature)
-            .map_err(|e| error(e.to_string()))?;
-
-        // Return the batch.
-        match batch.batch_id == batch_id {
-            true => Ok(batch),
-            false => Err(error("Invalid batch ID")),
-        }
+        Self::from(batch_id, author, round, timestamp, transmission_ids, previous_certificate_ids, signature)
+            .map_err(|e| error(e.to_string()))
     }
 }
 

@@ -74,6 +74,7 @@ impl<N: Network> BatchHeader<N> {
 
     /// Initializes a new batch header.
     pub fn from(
+        batch_id: Field<N>,
         author: Address<N>,
         round: u64,
         timestamp: i64,
@@ -87,8 +88,6 @@ impl<N: Network> BatchHeader<N> {
             // If the round is not zero and not one, then there should be at least one previous certificate ID.
             _ => ensure!(!previous_certificate_ids.is_empty(), "Invalid round number, must have certificates"),
         }
-        // Compute the batch ID.
-        let batch_id = Self::compute_batch_id(author, round, timestamp, &transmission_ids, &previous_certificate_ids)?;
         // Verify the signature.
         if !signature.verify(&author, &[batch_id, Field::from_u64(timestamp as u64)]) {
             bail!("Invalid signature for the batch header");

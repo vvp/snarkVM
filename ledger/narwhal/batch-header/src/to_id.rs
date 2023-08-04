@@ -36,7 +36,7 @@ impl<N: Network> BatchHeader<N> {
         transmission_ids: &IndexSet<TransmissionID<N>>,
         previous_certificate_ids: &IndexSet<Field<N>>,
     ) -> Result<Field<N>> {
-        let mut preimage = Vec::new();
+        let mut preimage = Vec::with_capacity(4 + transmission_ids.len() + 1 + previous_certificate_ids.len());
         // Insert the author.
         author.write_le(&mut preimage)?;
         // Insert the round number.
