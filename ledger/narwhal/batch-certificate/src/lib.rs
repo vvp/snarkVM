@@ -55,10 +55,6 @@ impl<N: Network> BatchCertificate<N> {
         batch_header: BatchHeader<N>,
         signatures: IndexMap<Signature<N>, i64>,
     ) -> Result<Self> {
-        // Compute the certificate ID.
-        if certificate_id != Self::compute_certificate_id(batch_header.batch_id(), &signatures)? {
-            bail!("Invalid batch certificate ID")
-        }
         // Verify the signatures are valid.
         for (signature, timestamp) in &signatures {
             let preimage = [batch_header.batch_id(), Field::from_u64(*timestamp as u64)];
