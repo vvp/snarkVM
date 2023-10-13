@@ -72,6 +72,7 @@ pub mod test_helpers {
         prelude::{Rng, TestRng, Uniform},
         types::Field,
     };
+    use proptest::prelude::{Arbitrary, BoxedStrategy};
 
     type CurrentNetwork = Testnet3;
 
@@ -90,5 +91,14 @@ pub mod test_helpers {
         }
         // Return the sample vector.
         sample
+    }
+
+    impl<N: Network> Arbitrary for TransmissionID<N> {
+        type Parameters = ();
+        type Strategy = BoxedStrategy<TransmissionID<N>>;
+
+        fn arbitrary_with(_: Self::Parameters) -> Self::Strategy {
+            todo!()
+        }
     }
 }

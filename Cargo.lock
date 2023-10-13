@@ -3174,6 +3174,7 @@ name = "snarkvm-ledger-narwhal-transmission-id"
 version = "0.15.4"
 dependencies = [
  "bincode",
+ "proptest",
  "serde_json",
  "snarkvm-console",
  "snarkvm-ledger-coinbase",
